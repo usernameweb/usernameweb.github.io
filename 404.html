@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+    <script>
+        // GitHub Pages SPA redirect
+        // This script handles routing for GitHub Pages
+        const path = window.location.pathname;
+        const baseUrl = window.location.origin;
+        
+        // Remove trailing slash and get the path
+        const cleanPath = path.replace(/\/$/, '');
+        
+        // Define route mappings
+        const routes = {
+            '/login': '/login/',
+            '/signup': '/signup/',
+            '/register': '/signup/',
+            '/forget-password': '/forget-password/',
+            '/forgot-password': '/forget-password/',
+            '/reset-password': '/forget-password/'
+        };
+        
+        // Check if it's a known route
+        if (routes[cleanPath]) {
+            window.location.replace(baseUrl + routes[cleanPath]);
+        } else if (cleanPath === '' || cleanPath === '/index.html') {
+            // Root or index.html - redirect to dashboard
+            window.location.replace(baseUrl + '/');
+        } else {
+            // Unknown route - redirect to login
+            window.location.replace(baseUrl + '/login/');
+        }
+    </script>
+</head>
+<body>
+    <p>Redirecting...</p>
+</body>
+</html>

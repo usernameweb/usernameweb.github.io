@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Account Manager</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="./asset/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="navbar-brand">Account Manager</div>
+            <div class="navbar-nav">
+                <div class="user-info">
+                    <span id="user-email"></span>
+                    <button class="logout-btn" id="logout-btn">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="table-container">
+            <div class="table-header">
+                <h2 class="table-title">Account Management</h2>
+                <div class="table-actions">
+                    <div class="export-container">
+                        <button class="export-btn" id="export-btn" disabled>
+                            <span class="material-icons export-icon">download</span>
+                            Export
+                            <span class="export-count" id="export-count" style="display: none;">0</span>
+                        </button>
+                    </div>
+                    <div class="action-dropdown-container">
+                        <button class="action-dropdown-btn" id="action-dropdown-btn" disabled>
+                            <span class="material-icons">more_vert</span>
+                            Actions
+                            <span class="material-icons dropdown-arrow">arrow_drop_down</span>
+                        </button>
+                        <div class="action-dropdown-menu" id="action-dropdown-menu">
+                            <button class="dropdown-item" id="bulk-edit-group">
+                                <span class="material-icons">label</span>
+                                Edit Group
+                            </button>
+                            <button class="dropdown-item" id="bulk-edit-tag">
+                                <span class="material-icons">sell</span>
+                                Edit Tag
+                            </button>
+                            <div class="dropdown-divider"></div>
+                            <button class="dropdown-item dropdown-item-danger" id="bulk-delete">
+                                <span class="material-icons">delete</span>
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                    <div class="search-container">
+                        <input type="text" class="search-input" placeholder="Search accounts..." id="search-input">
+                    </div>
+                    <div class="filter-container">
+                        <div class="filter-group">
+                            <input type="text" id="group-filter" class="filter-input" placeholder="Filter by Group..." autocomplete="off">
+                            <button class="filter-reset" id="group-reset" title="Clear group filter">
+                                <span class="material-icons reset-icon">close</span>
+                            </button>
+                            <div class="filter-suggestions" id="group-suggestions"></div>
+                        </div>
+                        <div class="filter-group">
+                            <input type="text" id="tag-filter" class="filter-input" placeholder="Filter by Tag..." autocomplete="off">
+                            <button class="filter-reset" id="tag-reset" title="Clear tag filter">
+                                <span class="material-icons reset-icon">close</span>
+                            </button>
+                            <div class="filter-suggestions" id="tag-suggestions"></div>
+                        </div>
+                        <div class="filter-group">
+                            <select id="duration-filter" class="filter-select">
+                                <option value="">All Duration</option>
+                                <option value="0">Today (0 Days)</option>
+                                <option value="1">Yesterday (1 Day)</option>
+                                <option value="2-7">Last Week (2-7 Days)</option>
+                                <option value="8-30">Last Month (8-30 Days)</option>
+                                <option value="31-365">Last Year (31-365 Days)</option>
+                                <option value="365+">Over 1 Year</option>
+                            </select>
+                            <button class="filter-reset" id="duration-reset" title="Clear duration filter">
+                                <span class="material-icons reset-icon">close</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="select-all-checkbox">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </th>
+                            <th>ID</th>
+                            <th>Username Shopee</th>
+                            <th>User Agent</th>
+                            <th>Email</th>
+                            <th>Group</th>
+                            <th>Tag</th>
+                            <th>Created</th>
+                            <th>Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody id="accounts-table-body">
+                        <!-- Data will be loaded here -->
+                    </tbody>
+                </table>
+                <!-- Loading spinner -->
+                <div class="table-loading" id="table-loading">
+                    <div class="dots-spinner">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="pagination-info">
+                <div class="pagination-stats" id="pagination-stats">
+                    <!-- Pagination stats will be loaded here -->
+                </div>
+                <div class="pagination-controls">
+                    <div class="items-per-page-container">
+                        <label for="items-per-page">Items per page:</label>
+                        <select id="items-per-page" class="items-per-page-select">
+                            <option value="15">15</option>
+                            <option value="30">30</option>
+                            <option value="45">45</option>
+                            <option value="60">60</option>
+                            <option value="75">75</option>
+                        </select>
+                    </div>
+                    <div class="pagination" id="pagination">
+                        <!-- Pagination will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal for Edit Account -->
+    <div class="modal-overlay" id="account-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-title">Edit Account</h3>
+                <button class="close-btn" id="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="account-form">
+                    <div class="form-group">
+                        <label for="username_shopee">Username Shopee</label>
+                        <input type="text" id="username_shopee" name="username_shopee" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="user_agent">User Agent</label>
+                        <input type="text" id="user_agent" name="user_agent" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="user_email">Email</label>
+                        <input type="email" id="user_email" name="user_email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="group_name">Group Name</label>
+                        <input type="text" id="group_name" name="group_name">
+                    </div>
+                    <div class="form-group">
+                        <label for="tag_name">Tag Name</label>
+                        <input type="text" id="tag_name" name="tag_name">
+                    </div>
+                    <div class="form-group">
+                        <label for="note">Note</label>
+                        <textarea id="note" name="note" rows="3" style="width: 100%; padding: 14px 16px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; color: var(--text-primary); font-family: inherit; resize: vertical;"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" id="cancel-btn">Cancel</button>
+                <button type="button" class="btn-save" id="save-btn">Save</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal for Edit Tag/Group -->
+    <div class="modal-overlay" id="tag-group-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="tag-group-modal-title">Edit Group</h3>
+                <button class="close-btn" id="close-tag-group-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="tag-group-form">
+                    <div class="form-group">
+                        <label for="tag-group-input" id="tag-group-label">Group Name</label>
+                        <div class="tag-group-input-container">
+                            <input type="text" id="tag-group-input" name="tag-group-input" placeholder="Enter group name..." autocomplete="off">
+                            <button class="tag-group-reset" id="tag-group-reset" type="button" title="Clear input">
+                                <span class="material-icons reset-icon">close</span>
+                            </button>
+                            <div class="tag-group-suggestions" id="tag-group-suggestions"></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" id="cancel-tag-group-btn">Cancel</button>
+                <button type="button" class="btn-save" id="save-tag-group-btn">Save</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+    
+    <!-- Progress Modal -->
+    <div id="progress-modal" class="progress-modal">
+        <div class="progress-content">
+            <div class="progress-header">
+                <h3 id="progress-title">Processing...</h3>
+            </div>
+            <div class="progress-body">
+                <div class="progress-info">
+                    <span id="progress-text">Preparing...</span>
+                    <span id="progress-stats">0 / 0</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <div class="progress-percentage" id="progress-percentage">0%</div>
+                </div>
+                <div class="progress-details" id="progress-details">
+                    <!-- Individual progress items will be added here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="./config.js"></script>
+    <script src="./lib/auth.js"></script>
+    <script src="./lib/dashboard.js"></script>
+    <script>
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check if user is authenticated
+            const isAuthenticated = await requireAuth();
+            
+            if (isAuthenticated) {
+                // Load user info
+                const user = await getCurrentUser();
+                if (user) {
+                    document.getElementById('user-email').textContent = user.email;
+                }
+                
+                // Initialize dashboard
+                await initializeDashboard();
+            }
+        });
+    </script>
+</body>
+</html>

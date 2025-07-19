@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forgot Password - Account Manager</title>
+    <link rel="stylesheet" href="../asset/style.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-header">
+            <h1>Reset Password</h1>
+            <p>Enter your email to receive a password reset link</p>
+        </div>
+        
+        <div id="error-message" class="error-message"></div>
+        <div id="success-message" class="success-message"></div>
+        
+        <form id="forgot-password-form">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required placeholder="Enter your registered email">
+            </div>
+            
+            <button type="submit" class="btn" id="reset-btn">
+                Send Reset Link
+            </button>
+        </form>
+        
+        <div class="auth-links">
+            <p>Remember your password? <a href="../login/">Login here</a></p>
+            <p>Don't have an account? <a href="../signup/">Register here</a></p>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../config.js"></script>
+    <script src="../lib/auth.js"></script>
+    <script>
+        // Check if user is already logged in
+        checkAuthAndRedirect();
+        
+        document.getElementById('forgot-password-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const resetBtn = document.getElementById('reset-btn');
+            const errorMessage = document.getElementById('error-message');
+            const successMessage = document.getElementById('success-message');
+            
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            resetBtn.disabled = true;
+            resetBtn.innerHTML = 'Sending...<span class="loading"></span>';
+            
+            try {
+                const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.origin + '/reset-password.html'
+                });
+                
+                if (error) throw error;
+                
+                successMessage.textContent = 'Password reset link has been sent to your email!';
+                successMessage.style.display = 'block';
+                
+                document.getElementById('forgot-password-form').reset();
+                
+                setTimeout(() => {
+                    window.location.href = '../login/';
+                }, 3000);
+                
+            } catch (error) {
+                errorMessage.textContent = error.message || 'Failed to send reset link. Please try again.';
+                errorMessage.style.display = 'block';
+                resetBtn.disabled = false;
+                resetBtn.textContent = 'Send Reset Link';
+            }
+        });
+    </script>
+</body>
+</html>
